@@ -1,0 +1,29 @@
+input:
+    command [... command]
+
+command:
+    name [arg_list] [redirect] [async]
+
+prog_name:
+    liter
+
+arg_list:
+    liter [... liter]
+
+redirect:
+    redirect_op file_name
+
+redirect_op:
+    >
+    <
+    >>
+
+file_name:
+    liter
+
+async_op:
+    &
+
+liter:
+    aaa
+    "aa \" a"
