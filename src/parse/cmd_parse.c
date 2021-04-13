@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
+#include <utils/dyn_string.h>
 #include "cmd_parse.h"
 
 #define is_space(c) (((c) == ' ' || (c) == '\t'))
@@ -27,15 +28,6 @@ static void skip_spaces()
 	}
 	while (is_space(c));
 	ungetc(c, stdin);
-}
-
-static void append_char(char c, int idx, char **buff_p, int *buff_size_p)
-{
-	if (*buff_size_p <= idx) {
-		*buff_size_p = *buff_size_p * 2 + 1;
-		*buff_p = (char *) realloc(*buff_p, *buff_size_p * sizeof(char));
-	}
-	(*buff_p)[idx] = c;
 }
 
 static int read_quoted_str(char **buff_p)
