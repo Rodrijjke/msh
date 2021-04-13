@@ -53,6 +53,7 @@ static int read_quoted_str(char **buff_p)
 		}
 		if (c == '"') {
 			if (!is_quote_escaped) {
+				append_char('\0', len, buff_p, &buff_size);
 				return len;
 			}
 			len--;
@@ -71,6 +72,7 @@ static int read_word(char **buff_p)
 	while (1) {
 		c = (char) getchar();
 		if (!is_word_char(c)) {
+			append_char('\0', len, buff_p, &buff_size);
 			ungetc(c, stdin);
 			return len;
 		}
@@ -83,12 +85,12 @@ static int read_liter(char **buff_p)
 {
 	char c = (char) getchar();
 	ungetc(c, stdin);
-	if (is_end(c))
+	if (is_end(c) || c == '|')
 		return 0;
 	int is_quoted = c == '\"';
 	return is_quoted
-		   ? read_quoted_str(buff_p)
-		   : read_word(buff_p);
+		? read_quoted_str(buff_p)
+		: read_word(buff_p);
 }
 
 static void read_args()
@@ -162,15 +164,18 @@ static void read_async_op()
 
 static void save_curr_cmd()
 {
-	curr_input.cmd_count++;
+	++curr_input.cmd_count;
 	size_t new_size = curr_input.cmd_count * sizeof(struct cmd);
 	curr_input.cmd_list = (struct cmd *) realloc(curr_input.cmd_list, new_size);
 	curr_input.cmd_list[curr_cmd_idx] = curr_cmd;
+	++curr_cmd_idx;
 }
 
 static void read_cmd()
 {
-	read_liter(&curr_cmd.name);
+	if (read_liter(&curr_cmd.name) == 0) {
+		return;
+	}
 	skip_spaces();
 	read_args();
 	skip_spaces();
@@ -180,11 +185,26 @@ static void read_cmd()
 	save_curr_cmd();
 }
 
+static void init_global()
+{
+	struct input new_input = {};
+	curr_input = new_input;
+	curr_cmd_idx = 0;
+}
+
+static void init_curr_cmd()
+{
+	struct cmd new_curr_cmd = {};
+	curr_cmd = new_curr_cmd;
+}
+
 struct input *parse_input()
 {
-	skip_spaces();
+	init_global();
 	char c;
 	while (1) {
+		skip_spaces();
+		init_curr_cmd();
 		read_cmd();
 		skip_spaces();
 		c = (char) getchar();
