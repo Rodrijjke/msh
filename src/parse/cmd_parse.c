@@ -165,9 +165,7 @@ static void save_curr_cmd()
 
 static void read_cmd()
 {
-	if (read_liter(&curr_cmd.name) == 0) {
-		return;
-	}
+	read_liter(&curr_cmd.name);
 	skip_spaces();
 	read_args();
 	skip_spaces();
@@ -175,6 +173,14 @@ static void read_cmd()
 	skip_spaces();
 	read_async_op();
 	save_curr_cmd();
+}
+
+static void read_to_end()
+{
+	char c;
+	do {
+		c = (char) getchar();
+	} while(!is_end(c));
 }
 
 static void init_global()
@@ -193,17 +199,26 @@ static void init_curr_cmd()
 struct input *parse_input()
 {
 	init_global();
+	skip_spaces();
+	read_cmd();
+
 	char c;
 	while (1) {
-		skip_spaces();
-		init_curr_cmd();
-		read_cmd();
 		skip_spaces();
 		c = (char) getchar();
 		if (is_end(c))
 			return &curr_input;
 		if (c != '|') {
 			curr_input.error_msg = "Incorrect commands separator";
+			read_to_end();
+			return &curr_input;
+		}
+		skip_spaces();
+		init_curr_cmd();
+		read_cmd();
+		if (curr_cmd.name == NULL) {
+			curr_input.error_msg = "No command to pipe";
+			read_to_end();
 			return &curr_input;
 		}
 	}
