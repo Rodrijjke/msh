@@ -110,21 +110,21 @@ static void read_args()
 	}
 }
 
-static enum redirect_type read_redirect_op()
+static int read_redirect_flags()
 {
 	char c = (char) getchar();
 	if (c == '>') {
 		c = (char) getchar();
 		if (c == '>') {
-			return REDIRECT_OUT_APPEND;
+			return REDIR_OUT | REDIR_APPEND;
 		}
 		else {
 			ungetc(c, stdin);
-			return REDIRECT_OUT;
+			return REDIR_OUT;
 		}
 	}
 	else {
-		return REDIRECT_IN;
+		return REDIR_IN;
 	}
 }
 
@@ -135,7 +135,7 @@ static void read_redirect()
 	if (!is_redirect_op_char(c)) {
 		return;
 	}
-	curr_cmd.redirect_type = read_redirect_op();
+	curr_cmd.redirect_flags = read_redirect_flags();
 	skip_spaces();
 	char *file;
 	int file_len = read_liter(&file);
@@ -159,6 +159,8 @@ static void read_async_op()
 
 static void save_curr_cmd()
 {
+	if (curr_cmd.name == NULL)
+		return;
 	++curr_input.cmd_count;
 	size_t new_size = curr_input.cmd_count * sizeof(struct cmd);
 	curr_input.cmd_list = (struct cmd *) realloc(curr_input.cmd_list, new_size);

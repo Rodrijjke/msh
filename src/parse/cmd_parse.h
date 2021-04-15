@@ -4,10 +4,10 @@
 
 #ifndef MSH_CMD_PARSE_H
 #define MSH_CMD_PARSE_H
-enum redirect_type {
-	REDIRECT_IN = 10,
-	REDIRECT_OUT = 20,
-	REDIRECT_OUT_APPEND = 30
+enum redirect_flag {
+	REDIR_IN = 1,
+	REDIR_OUT = 2,
+	REDIR_APPEND = 4
 };
 
 struct cmd {
@@ -15,7 +15,7 @@ struct cmd {
 	int args_count;
 	char **args;
 	char *redirect_file;
-	enum redirect_type redirect_type;
+	int redirect_flags;
 	int is_async;
 };
 
