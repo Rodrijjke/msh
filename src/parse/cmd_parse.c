@@ -87,8 +87,11 @@ static int read_liter(char **buff_p)
 
 static void read_args()
 {
-	curr_cmd.args_count = 0;
-	curr_cmd.args = NULL;
+	if (curr_cmd.name == NULL)
+		return;
+	curr_cmd.args = (char **) malloc(sizeof(char *));
+	curr_cmd.args[0] = curr_cmd.name;
+	curr_cmd.args_count = 1;
 	int liter_len, args_cap = 0;
 	char *buff;
 	while (1) {
@@ -183,17 +186,18 @@ static void read_to_end()
 	} while(!is_end(c));
 }
 
-static void init_global()
-{
-	struct input new_input = {};
-	curr_input = new_input;
-	curr_cmd_idx = 0;
-}
-
 static void init_curr_cmd()
 {
-	struct cmd new_curr_cmd = {};
-	curr_cmd = new_curr_cmd;
+	static const struct cmd empty;
+	curr_cmd = empty;
+}
+
+static void init_global()
+{
+	static const struct input empty;
+	curr_input = empty;
+	curr_cmd_idx = 0;
+	init_curr_cmd();
 }
 
 struct input *parse_input()
