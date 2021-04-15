@@ -26,12 +26,7 @@ void start_shell_cycle()
 		if (strcmp(curr_cmd.name, "exit") == 0) {
 			break;
 		}
-		char *prog_path = find_prog_path(curr_cmd.name);
-		if (prog_path == NULL) {
-			printf("Command not found: %s\n", curr_cmd.name);
-			continue;
-		}
-		int errno = exec(prog_path, curr_cmd.args, curr_cmd.redirect_file, curr_cmd.redirect_flags);
+		int errno = exec_pipe(input_p->cmd_list, input_p->cmd_count);
 		if (errno) {
 			printf("Error %d\n", errno);
 		}

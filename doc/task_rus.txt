@@ -41,7 +41,7 @@ execle, execlp, execv, execvp, execvP.
 
 * Выполнить код в python и выполнить поиск по его результату:
 
-    > echo "print('result is ', 123 + 456)" | python -i | grep result
+    > echo "print('result is ', 123 + 456)" | python3 -i | grep result
 
 * Печать экранированной кавычки в файл и его вывод:
 
