@@ -4,5 +4,5 @@
 
 #ifndef MSH_PROG_EXEC_H
 #define MSH_PROG_EXEC_H
-int exec(char *prog_path, char **args, char *redirect_file, int redirect_flags);
+int exec_pipe(struct cmd *cmd_list, int cmd_count);
 #endif //MSH_PROG_EXEC_H
